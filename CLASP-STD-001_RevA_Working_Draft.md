@@ -8,7 +8,7 @@
 |---|---|
 | **Document** | CLASP-STD-001 |
 | **Revision** | A (Working Draft) |
-| **Date** | 2026-08-01 |
+| **Date** | 2026-11-14 |
 | **Status** | For comment. Not for design release. |
 | **Issuing body** | *[TBD - see §11]* |
 | **Distribution** | Unrestricted |
@@ -43,13 +43,13 @@ It covers operations on the lunar surface, in lunar orbit, and at cislunar libra
 This revision does not cover:
 
 - Crewed docking or pressurised mating. See IDSS IDD.
-- Liquid hydrogen service. See §5.1 for rationale.
-- Payloads exceeding 2,000 kg lunar-surface mass on a single port. Multi-port and larger size classes are reserved for future revisions.
+- Liquid hydrogen service. See §6.1 for rationale.
+- Payloads exceeding 2,000 kg mass under lunar surface gravity (1.625 m/s², 3.25 kN static weight) on a single port. Multi-port and larger size classes are reserved for future revisions.
 - Hypergolic or toxic propellant transfer.
 
 ### 1.3 Normative language
 
-The key words **shall**, **should**, and **may** are to be interpreted as described in RFC 2119. Requirements are identified by tags of the form `[CLASP-nnn]` and are individually verifiable per §9.
+The key words **shall**, **shall not**, **should**, **should not**, and **may** are to be interpreted as described in RFC 2119. Requirements are identified by tags of the form `[CLASP-nnn]` and are individually verifiable per §10.
 
 ---
 
@@ -57,13 +57,11 @@ The key words **shall**, **should**, and **may** are to be interpreted as descri
 
 | Reference | Title |
 |---|---|
-| IDSS IDD Rev E | International Docking System Standard Interface Definition Document |
-| NASA-STD-6016 | Standard Materials and Processes Requirements for Spacecraft |
+| IDSS IDD Rev E | International Docking System Standard Interface Definition Document *(informative)* |
 | NASA-STD-6001 | Flammability, Offgassing and Compatibility Requirements |
 | ANSI/AIAA S-080 | Space Systems: Metallic Pressure Vessels, Pressurized Structures, and Pressure Components |
 | ASTM E595 | Total Mass Loss and Collected Volatile Condensable Materials from Outgassing |
 | IEST-STD-CC1246 | Product Cleanliness Levels |
-| ECSS-Q-ST-70-02 | Thermal Vacuum Outgassing Test |
 | ISO 1161 | Series 1 Freight Containers: Corner and Intermediate Fittings *(informative)* |
 | RFC 2119 | Key Words for Use in RFCs to Indicate Requirement Levels |
 
@@ -75,7 +73,7 @@ The key words **shall**, **should**, and **may** are to be interpreted as descri
 
 **Passive side (port)** — The payload-mounted half. Contains no actuators and requires no power.
 
-**Soft capture** — Initial compliant engagement within the misalignment envelope of §4.3. Loads are low and the connection is not structural.
+**Soft capture** — Initial compliant engagement within the misalignment envelope of §5.1. Loads are low and the connection is not structural.
 
 **Hard latch** — Preloaded rigid engagement. The interface is structural and load-bearing.
 
@@ -103,7 +101,7 @@ The key words **shall**, **should**, and **may** are to be interpreted as descri
 
 `[CLASP-003]` A single active end effector **shall** be capable of capturing any tier without reconfiguration.
 
-**Rationale.** Tiering exists so that low-value bulk cargo is not taxed for capability it does not need. A regolith bin should carry a CLASP-M port costing a few hundred dollars. Common geometry preserves fleet interoperability.
+**Rationale.** Tiering exists so that low-value bulk cargo is not taxed for capability it does not need. A regolith bin should carry a CLASP-M port costing well under CAD 2,000. Common geometry preserves fleet interoperability.
 
 ### 4.2 Physical envelope
 
@@ -121,7 +119,7 @@ The key words **shall**, **should**, and **may** are to be interpreted as descri
 
 ### 4.3 Coordinate frame
 
-The port frame origin lies at the centre of the mating plane.
+The port frame origin lies at the centre of the mating plane *(axial datum offset from the payload mounting plane, plus payload keep-out zones, to be defined in Revision B)*.
 
 - **+Z** — along the mating axis, positive outward from the payload
 - **+X** — in the mating plane, aligned with the primary keying feature
@@ -151,7 +149,7 @@ The port frame origin lies at the centre of the mating plane.
 
 `[CLASP-021]` Alignment **shall** be achieved by three helical cam ramps spaced at 120°, drawing the interface into coaxial alignment as the active side retracts.
 
-`[CLASP-022]` Cam lead angle **shall** be 15° ± 2°, selected to be non-backdriving under the loads of §5.3.
+`[CLASP-022]` Cam lead angle **shall** be 15° ± 2°, selected to be non-backdriving under the loads of §5.3. *(Open item: verify whether friction-locked cams are viable across UHV/dust friction variations vs. a positive mechanical latch; see §12.)*
 
 `[CLASP-023]` One ramp **shall** be geometrically distinct to establish unambiguous clocking.
 
@@ -159,7 +157,7 @@ The port frame origin lies at the centre of the mating plane.
 
 ### 5.3 Structural capability
 
-`[CLASP-030]` When hard-latched, the interface **shall** carry the following limit loads without permanent deformation:
+`[CLASP-030]` When hard-latched, the interface **shall** carry the following limit loads without permanent deformation *(combined vs. independent load cases, joint stiffness, and hard-latched alignment tolerances TBD in Revision B)*:
 
 | Load case | Limit |
 |---|---|
@@ -172,7 +170,7 @@ The port frame origin lies at the centre of the mating plane.
 
 `[CLASP-032]` Latch preload **shall** be sufficient to prevent gapping under limit load.
 
-**Sizing basis.** A 2,000 kg payload in lunar gravity weighs 3.25 kN. A dynamic amplification factor of 3.0 for robotic handling transients gives 9.75 kN, rounded to 10 kN.
+**Sizing basis.** A 2,000 kg payload in lunar gravity weighs 3.25 kN. A dynamic amplification factor of 3.0 for robotic handling transients gives 9.75 kN, rounded to 10 kN. *(Note: the 2.0 kN·m bending limit corresponds to a 0.20 m centre-of-gravity offset at 10 kN transient load; shear/torsion dowel pins TBD.)*
 
 ### 5.4 Sequence
 
@@ -185,7 +183,7 @@ The port frame origin lies at the centre of the mating plane.
 5. Latch confirmation
 6. Fluid or power connection, if applicable
 
-`[CLASP-041]` Fluid poppets **shall NOT** open before hard latch confirmation. Mechanical integrity precedes fluid connection without exception.
+`[CLASP-041]` Fluid poppets **shall not** open before hard latch confirmation. Mechanical integrity precedes fluid connection without exception.
 
 `[CLASP-042]` The active side **shall** provide a mechanical release path recoverable without power or pressure.
 
@@ -199,7 +197,7 @@ The port frame origin lies at the centre of the mating plane.
 
 `[CLASP-051]` The interface **should** be qualified for liquid methane at 112 K as a secondary service fluid.
 
-`[CLASP-052]` Liquid hydrogen service is explicitly out of scope for Revision A.
+`[CLASP-052]` Liquid hydrogen service **shall not** be supported in Revision A.
 
 **Rationale.** At an O/F ratio of 3.6, oxygen is 78% of propellant mass in a methalox stack and is the substantially easier cryogen to hold. Storing 100 t of LOX requires roughly 1 kW of cryocooler power against a sunshielded environment; the same mass of hydrogen occupies sixteen times the volume and needs approximately twenty times the lift power at 20 K. Hydrogen is where depot programmes go to die. Excluding it is a feature of this standard, not a limitation.
 
@@ -227,7 +225,7 @@ The port frame origin lies at the centre of the mating plane.
 
 `[CLASP-080]` Dynamic seats **shall** be PCTFE, or metallic C-seals where cycle life permits.
 
-`[CLASP-081]` Elastomeric seals **shall NOT** be used in any cryogenic sealing function.
+`[CLASP-081]` Elastomeric seals **shall not** be used in any cryogenic sealing function.
 
 `[CLASP-082]` All non-metallic materials **shall** meet ASTM E595 with TML ≤ 1.0% and CVCM ≤ 0.10%.
 
@@ -241,7 +239,7 @@ The port frame origin lies at the centre of the mating plane.
 
 `[CLASP-091]` The chilldown sequence **shall** reduce receiving-side line and coupling body temperature to ≤ 120 K before main poppet opening.
 
-`[CLASP-092]` Chilldown state **shall** be reported to the active side before full-rate transfer is authorised.
+`[CLASP-092]` Chilldown state **shall** be reported to the active side before full-rate transfer is authorised. *(Open items: define how CLASP-F—which lacks a power/data link—reports chilldown state, how the 2.0 mm bypass orifice seals when demated per [CLASP-072], and how two-phase boiloff vents during chilldown; see §12.)*
 
 **Rationale.** Introducing 90 K liquid into warm receiving hardware causes flash boiling with typical losses of 5 to 10% of transferred mass. On the ground this is managed by crew procedure. Here it must be a sequence embedded in the interface itself, which places it in the standard rather than in each operator's operations manual. This requirement is the single largest determinant of whether propellant logistics closes economically.
 
@@ -259,6 +257,8 @@ The port frame origin lies at the centre of the mating plane.
 
 Lunar regolith is unweathered, electrostatically charged, and mechanically abrasive, with a median grain size near 70 μm and a significant sub-10 μm fraction. Apollo experience with seizing connectors and abraded seals is the governing precedent. No single mitigation is sufficient.
 
+*(Editorial note for Revision B: Tier applicability of §7.1 and §7.2 is open. Placing an inductively powered 1 kV EDS array on CLASP-M conflicts with the "dumb metal" / CAD 2,000 target, requiring a gaseous oxygen purge on every active arm penalises purely mechanical handlers, and energising 1 kV electrodes in a GOX purge presents a discharge/ignition hazard; see §12.)*
+
 `[CLASP-110]` Three independent dust mitigations **shall** be provided.
 
 ### 7.1 Electrodynamic dust shield
@@ -269,7 +269,7 @@ Lunar regolith is unweathered, electrostatically charged, and mechanically abras
 
 `[CLASP-113]` Drive power **shall** be supplied inductively from the active side. The passive port **shall** require no stored or wired power.
 
-`[CLASP-114]` The system **shall** demonstrate ≥ 90% removal of particles ≥ 10 μm from the sealing face.
+`[CLASP-114]` The system **shall** demonstrate ≥ 90% removal of particles ≥ 10 μm from the sealing face *(measurement basis—mass, area, or count—and initial dust loading TBD in Revision B)*.
 
 ### 7.2 Purge
 
@@ -297,23 +297,23 @@ Lunar regolith is unweathered, electrostatically charged, and mechanically abras
 
 `[CLASP-121]` The interface **shall** deliver ≥ 500 W at ≥ 85% end-to-end efficiency.
 
-`[CLASP-122]` A single hardwired redundant discrete pair **shall** be provided for safe/arm and inhibit functions.
+`[CLASP-122]` A single hardwired redundant discrete pair **shall** be provided for safe/arm and inhibit functions. *(Open item: reconcile physical contacts with [CLASP-120], define connector/pinout/dust wiping, and address inhibit coverage for CLASP-F; see §12.)*
 
-**Rationale.** Contactless power eliminates pin damage, contact abrasion, and dust bridging, at a cost of roughly 10% efficiency. Safety-critical inhibits are the sole exception: they do not ride on a link that can be optically obscured.
+**Rationale.** Contactless power eliminates pin damage, contact abrasion, and dust bridging, at a cost of roughly 10–15% efficiency. Safety-critical inhibits are the sole exception: they do not ride on a link that can be optically obscured.
 
 ### 8.2 Data
 
 `[CLASP-130]` Data transfer **shall** be by short-range optical link, ≥ 10 Mbit/s full duplex.
 
-`[CLASP-131]` The link **shall** operate across the full hard-latched alignment tolerance.
+`[CLASP-131]` The link **shall** operate across the full hard-latched alignment tolerance *(tolerance values TBD in §5.3)*.
 
-`[CLASP-132]` A defined low-rate fallback **shall** be available over the discrete pair of `[CLASP-122]`.
+`[CLASP-132]` A defined low-rate fallback **shall** be available over the discrete pair of `[CLASP-122]` *(bit rate, protocol, and safety isolation from inhibit circuits TBD in Revision B)*.
 
 ### 8.3 Passive identification
 
 `[CLASP-140]` Every port, all tiers, **shall** carry passive retroreflective fiducials in an asymmetric pattern sufficient for six-degree-of-freedom pose estimation.
 
-`[CLASP-141]` Every port **shall** carry a machine-readable passive tag encoding, at minimum: port tier, unique serial, payload contents identifier, fill state, and accumulated cycle count.
+`[CLASP-141]` Every port **shall** carry a machine-readable passive tag encoding, at minimum: port tier, unique serial, payload contents identifier, fill state, and accumulated cycle count. *(Open item: separate static identity from active-written dynamic fields—fill state and cycle count—and specify the RF/optical tag protocol; see §12.)*
 
 `[CLASP-142]` Fiducials and tag **shall** be readable with no power on the passive side.
 
@@ -327,16 +327,18 @@ Lunar regolith is unweathered, electrostatically charged, and mechanically abras
 
 | Parameter | Requirement |
 |---|---|
-| Operational temperature | −170 °C to +120 °C |
-| Survival temperature | −180 °C to +130 °C |
+| Operational temperature | −170 °C to +120 °C (ambient structure); down to 90 K (−183 °C) on cryogenic wetted surfaces during transfer |
+| Survival temperature | −190 °C (83 K) to +130 °C *(bounds 90 K LOX service; 30–50 K PSR survival TBD)* |
 | Thermal cycles | 500 full lunar day/night cycles minimum |
 | Pressure | 10⁻¹⁰ to 10⁻¹² torr |
 | Dust exposure | Per §10.2 simulant campaign |
-| Storage, unattended | 5 years in lunar surface environment |
+| Storage, unattended | 5 years in lunar surface environment *(radiation/UV dose limits TBD)* |
 | Mating cycles (CLASP-M) | 500 minimum |
 | Mating cycles (CLASP-F, -FP) | 1,000 minimum |
 
-`[CLASP-151]` Differential thermal expansion across the mated interface **shall not** compromise seal integrity or latch preload across the full operational range.
+`[CLASP-151]` Differential thermal expansion across the mated interface **shall not** compromise seal integrity or latch preload across the full operational range *(allowable material/CTE bounds TBD)*.
+
+*(Open items for §9: launch vibration/shock loads, UHV anti-galling/cold-welding controls, and electrical bonding/ESD grounding resistance across the mated interface; see §12.)*
 
 ---
 
@@ -350,10 +352,10 @@ Each requirement is verified by Test (T), Analysis (A), Inspection (I), or Demon
 
 `[CLASP-160]` Certification **shall** require successful completion of all of the following:
 
-1. **Dust immersion** — Full cycle life in lunar regolith simulant (LHS-1 or JSC-1A) at representative charging state, with no degradation beyond allowables.
+1. **Dust immersion** — Full cycle life in lunar regolith simulant (LHS-1 or JSC-1A) at representative charging state, with no degradation beyond allowables *(charging state, deposition density, and post-dust leak/functional allowables TBD)*.
 2. **Thermal vacuum cycling** — 500 cycles across the full survival range at ≤ 10⁻⁶ torr.
 3. **Cryogenic mate/demate** — Full rated cycle life with LOX, verifying trapped volume and leak rate at beginning and end of life.
-4. **Misalignment matrix** — Capture demonstrated at all eight envelope corners of §5.1 plus nominal.
+4. **Misalignment matrix** — Capture demonstrated at extreme bounding corners of the §5.1 6-DOF envelope plus nominal *(representative test matrix TBD)*.
 5. **Structural** — Limit and ultimate load application per §5.3.
 6. **Interoperability** — Successful mate with the reference active end effector and with at least one independently manufactured port.
 
@@ -409,6 +411,14 @@ The proposed seeding strategy is to require CLASP conformance on nationally fund
 | 8 | Cost model validating the CAD 2,000 recurring target for CLASP-M |
 | 9 | Position on liquid hydrogen for a future CLASP-FH tier |
 | 10 | Cross-compatibility assessment against IDSS and any emerging cargo standards |
+| 11 | Tier scoping of §7 dust mitigation: reconcile 1 kV EDS + GOX purge with CLASP-M "dumb metal" / CAD 2,000 target and evaluate 1 kV/GOX ignition hazard |
+| 12 | Reconcile hardwired discrete safe/arm contacts (`[CLASP-122]`) with contactless philosophy (`[CLASP-120]`), data isolation (`[CLASP-132]`), and CLASP-F interlocks |
+| 13 | Define how CLASP-F senses and reports ≤ 120 K chilldown state (`[CLASP-092]`) without power or data, plus bypass orifice demated sealing and chilldown boiloff venting |
+| 14 | Specify passive tag standard/protocol and separate static identity from active-written dynamic state (`[CLASP-141]`) |
+| 15 | Define soft-capture grapple geometry, hard-latch engagement features, payload keep-out zones, mounting datum offset, passive cover interface, and hard-latched alignment tolerances |
+| 16 | Evaluate non-backdriving 15° ± 2° cam friction lock vs. positive mechanical latch under UHV/dust friction variations (`[CLASP-022]`) and review 2.0 kN·m bending margin (`[CLASP-030]`) |
+| 17 | Add launch vibration/shock, 30–50 K PSR survival, radiation/UV dose, UHV anti-galling/cold-welding, and ESD electrical bonding requirements (§9) |
+| 18 | Separate internal commercial/certification strategy (§11.2) from the public technical IDD prior to external stakeholder release |
 
 ---
 
