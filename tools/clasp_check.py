@@ -120,13 +120,17 @@ def engineering_sanity_checks() -> None:
         f"{max_bolt_shear_kn:.2f} kN shear/bolt"
     )
 
-    # 3. Cam ramp friction / efficiency (§5.2: 15° ± 2°)
+    # 3. Cam ramp alignment/retraction efficiency (§5.2: 15° ± 2°; preload held by positive latch)
     for deg in (13.0, 15.0, 17.0):
         alpha = math.radians(deg)
         mu_lock = math.tan(alpha)
-        # Mechanical efficiency during driving at mu = mu_lock (minimum to avoid backdrive)
-        eta_at_lock = math.tan(alpha) / math.tan(alpha + math.atan(mu_lock))
-        print(f"Cam angle {deg:.0f}°: self-locking requires mu >= {mu_lock:.3f} (retraction eff <= {eta_at_lock * 100:.1f}%)")
+        # Retraction mechanical efficiency at nominal sliding friction mu = 0.20 (lubricated/coated UHV)
+        mu_slide = 0.20
+        eta_slide = math.tan(alpha) / math.tan(alpha + math.atan(mu_slide))
+        print(
+            f"Cam angle {deg:.0f}°: retraction eff @ mu={mu_slide:.2f} is {eta_slide * 100:.1f}% "
+            f"(ref: friction-lock threshold mu={mu_lock:.3f}; preload held by positive latch)"
+        )
 
     # 4. LOX flow velocity & trapped volume (§6.2, §6.3)
     bore_m = 0.025
