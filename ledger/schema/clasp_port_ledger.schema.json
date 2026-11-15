@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clasp-standard.org/schemas/clasp_port_ledger.schema.json",
+  "title": "CLASP-STD-001 Fleet Port Ledger",
+  "description": "Fleet and active-side ledger schema keyed by [CLASP-141] static DataMatrix unique_serial.",
+  "type": "object",
+  "required": ["schema_version", "generated_utc", "ports"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "generated_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PortRecord"
+      }
+    }
+  },
+  "$defs": {
+    "PortTier": {
+      "type": "string",
+      "enum": ["CLASP-M", "CLASP-F", "CLASP-FP"]
+    },
+    "FillState": {
+      "type": "string",
+      "enum": ["EMPTY", "CHILLING", "PARTIAL", "FULL", "VENTING", "UNKNOWN", "NA"]
+    },
+    "EventType": {
+      "type": "string",
+      "enum": ["REGISTER", "MATE", "DEMATE", "TRANSFER", "INSPECT", "RECERTIFY"]
+    },
+    "PortRecord": {
+      "type": "object",
+      "required": [
+        "unique_serial",
+        "port_tier",
+        "payload_contents",
+        "fill_state",
+        "cycle_count",
+        "rated_cycle_limit",
+        "last_updated_utc"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "unique_serial": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9._-]{1,63}$",
+          "description": "Immutable [CLASP-141] DataMatrix unique serial key."
+        },
+        "port_tier": {
+          "$ref": "#/$defs/PortTier"
+        },
+        "payload_contents": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "enum": ["LH2", "HYDRAZINE", "MMH", "NTO"]
+          },
+          "description": "Current payload/fluid identifier (LH2 and hypergolics excluded in Rev A per §1.2 and [CLASP-052])."
+        },
+        "fill_state": {
+          "$ref": "#/$defs/FillState"
+        },
+        "fill_fraction": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "fluid_mass_kg": {
+          "type": ["number", "null"],
+          "minimum": 0.0
+        },
+        "cycle_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rated_cycle_limit": {
+          "type": "integer",
+          "enum": [500, 1000],
+          "description": "Per [CLASP-150]: 500 for CLASP-M, 1000 for CLASP-F and CLASP-FP."
+        },
+        "certificate_number": {
+          "type": ["string", "null"],
+          "maxLength": 64,
+          "description": "Optional [CLASP-162] conformance registry certificate number."
+        },
+        "last_effector_id": {
+          "type": ["string", "null"],
+          "maxLength": 64
+        },
+        "last_updated_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recent_events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MatingEvent"
+          }
+        }
+      }
+    },
+    "MatingEvent": {
+      "type": "object",
+      "required": [
+        "event_id",
+        "unique_serial",
+        "active_effector_id",
+        "event_type",
+        "payload_contents",
+        "fill_state",
+        "delta_cycles",
+        "occurred_at_utc"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "unique_serial": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9._-]{1,63}$"
+        },
+        "active_effector_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "event_type": {
+          "$ref": "#/$defs/EventType"
+        },
+        "payload_contents": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "fill_state": {
+          "$ref": "#/$defs/FillState"
+        },
+        "fill_fraction": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "fluid_mass_kg": {
+          "type": ["number", "null"],
+          "minimum": 0.0
+        },
+        "delta_cycles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "chilldown_temp_k": {
+          "type": ["number", "null"],
+          "minimum": 0.0
+        },
+        "trapped_loss_g": {
+          "type": ["number", "null"],
+          "minimum": 0.0
+        },
+        "occurred_at_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
+    }
+  }
+}
+

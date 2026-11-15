@@ -22,5 +22,24 @@ jobs:
           python-version: "3.12"
 
       - name: Run CLASP spec linter and sizing checks
-        run: python3 tools/clasp_check.py
+        run: |
+          python3 tools/clasp_check.py
+          python3 -m json.tool ledger/schema/clasp_port_ledger.schema.json > /dev/null
 
+  ledger-cpp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install SQLite development headers
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev sqlite3
+
+      - name: Validate SQLite DDL
+        run: sqlite3 :memory: < ledger/sql/schema.sql
+
+      - name: Configure and build C++ fleet ledger
+        run: cmake -S ledger -B ledger/build && cmake --build ledger/build -j
+
+      - name: Run CTest unit suite
+        run: ctest --test-dir ledger/build --output-on-failure
