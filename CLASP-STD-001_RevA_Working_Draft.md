@@ -8,7 +8,7 @@
 |---|---|
 | **Document** | CLASP-STD-001 |
 | **Revision** | A (Working Draft) |
-| **Date** | 2026-11-14 |
+| **Date** | 2026-11-15 |
 | **Status** | For comment. Not for design release. |
 | **Issuing body** | *[TBD - see §11]* |
 | **Distribution** | Unrestricted |
@@ -373,15 +373,13 @@ The passive port specification is published **free of charge and free of encumbr
 
 This is deliberate. The standard earns nothing from the port and is not intended to. Universal adoption of the passive side is the entire objective.
 
-### 11.2 Retained positions
+### 11.2 Scope of open grant
 
-Three things sit outside the free grant:
+The royalty-free grant in §11.1 covers the passive port interface specification and conformance geometry. The following remain independent of the passive specification grant:
 
-1. **The active end effector.** Reference design and implementation.
-2. **The autonomy and pose-estimation stack.** Capture under adverse lunar illumination is the genuinely hard problem and is where operational advantage accumulates.
-3. **The conformance test facility and certification mark.**
-
-The third is the strategic asset. USB, Bluetooth, and the shipping container were each won not by whoever wrote the best specification but by whoever administered certification. Whoever runs the dust-and-thermal-cycle campaign that grants the mark holds the position irrespective of who manufactures the hardware or who launches it.
+1. **Active end effector implementations.** Proprietary manipulator mechanisms and reference hardware designs.
+2. **Autonomy and pose-estimation software.** Capture, perception, and control stacks operating under lunar illumination and dust constraints.
+3. **Accredited conformance testing and mark administration.** Qualification campaigns and use of the CLASP conformance mark are governed through accredited test facilities under §10 and §11.3 to preserve fleet-wide interoperability.
 
 ### 11.3 Governance
 
@@ -393,7 +391,7 @@ The third is the strategic asset. USB, Bluetooth, and the shipping container wer
 
 ### 11.4 Adoption path
 
-The proposed seeding strategy is to require CLASP conformance on nationally funded lunar hardware, beginning with programmes already under contract. This produces a small but real installed base and a published specification in advance of any competing standard.
+Early adoption targets nationally funded and commercial lunar surface hardware so that an initial multi-vendor installed base and verified interoperability record exist prior to Revision B release.
 
 ---
 
@@ -418,7 +416,6 @@ The proposed seeding strategy is to require CLASP conformance on nationally fund
 | 15 | Define soft-capture grapple geometry, hard-latch engagement features, payload keep-out zones, mounting datum offset, passive cover interface, and hard-latched alignment tolerances |
 | 16 | Evaluate non-backdriving 15° ± 2° cam friction lock vs. positive mechanical latch under UHV/dust friction variations (`[CLASP-022]`) and review 2.0 kN·m bending margin (`[CLASP-030]`) |
 | 17 | Add launch vibration/shock, 30–50 K PSR survival, radiation/UV dose, UHV anti-galling/cold-welding, and ESD electrical bonding requirements (§9) |
-| 18 | Separate internal commercial/certification strategy (§11.2) from the public technical IDD prior to external stakeholder release |
 
 ---
 

@@ -1,0 +1,81 @@
+# CLASP-STD-001 — Annex A: Verification Cross-Reference Matrix (Working Draft)
+
+| | |
+|---|---|
+| **Parent Document** | [CLASP-STD-001_RevA_Working_Draft.md](CLASP-STD-001_RevA_Working_Draft.md) |
+| **Revision** | A (Working Draft Supplement) |
+| **Date** | 2026-11-15 |
+| **Status** | Draft VCRM for Revision B preparation |
+
+**Verification Method Key (§10.1):** **T** = Test | **A** = Analysis | **I** = Inspection | **D** = Demonstration
+
+---
+
+## Verification Cross-Reference Matrix (63 Requirements)
+
+| ID | Section | Requirement Summary | T | A | I | D | Verification Notes / Rev B Dependencies |
+|---|---|---|---|---|---|---|---|
+| `CLASP-001` | §4.1 | Three tiers defined (`CLASP-M`, `CLASP-F`, `CLASP-FP`) | | | X | | Design documentation and tier drawing audit |
+| `CLASP-002` | §4.1 | Shared external footprint, bolt pattern, capture, and alignment geometry | | | X | | Drawing/CAD overlay comparison across all tiers |
+| `CLASP-003` | §4.1 | Single active end effector captures any tier without reconfiguration | | | | X | Multi-tier mating demo with reference end effector |
+| `CLASP-010` | §4.2 | 240 mm circular footprint, ≤ 55 mm protrusion above mounting plane | | | X | | Dimensional CMM / gauge inspection |
+| `CLASP-011` | §4.2 | 8 × M8 on 210 mm BCD, 15° clocking offset | | | X | | Dimensional inspection and fastener fit gauge |
+| `CLASP-012` | §4.2 | Passive port mass limits (3.5 kg / 6.0 kg / 7.5 kg) | | | X | | Calibrated scale measurement of flight-representative hardware |
+| `CLASP-020` | §5.1 | Soft capture across 6-DOF misalignment & rate envelope | X | X | | | Dynamic 6-DOF capture rig across extreme corners (§10.2 #4) |
+| `CLASP-021` | §5.2 | Alignment via three 120° helical cam ramps during retraction | | | X | X | Geometry inspection + kinematic retraction demo |
+| `CLASP-022` | §5.2 | Cam lead angle 15° ± 2°, non-backdriving under §5.3 loads | X | X | X | | Angle inspection; friction/backdrive test under UHV + dust (Open Item #16) |
+| `CLASP-023` | §5.2 | One ramp geometrically distinct for unambiguous clocking | | | X | X | Inspection + intentional 120°/240° mis-clock rejection test |
+| `CLASP-024` | §5.2 | Passive alignment geometry; no powered actuation on passive side | | | X | | Schematic and BOM audit |
+| `CLASP-030` | §5.3 | Limit loads (10 kN axial, 5 kN shear, 2.0 kN·m bend, 1.0 kN·m torsion) | X | X | | | Static load frame test; load combination & stiffness TBD (Open Item #15/#16) |
+| `CLASP-031` | §5.3 | Yield FoS ≥ 1.25 and ultimate FoS ≥ 1.4 on limit load | X | X | | | FEA stress report + coupon/assembly load test to 1.4× limit |
+| `CLASP-032` | §5.3 | Latch preload prevents gapping under limit load | X | X | | | Displacement/gap sensor check under combined limit loading |
+| `CLASP-040` | §5.4 | Confirmed 6-stage mating sequence | | | | X | Active end effector state-machine telemetry log |
+| `CLASP-041` | §5.4 | Fluid poppets prohibited from opening before hard latch confirmation | X | X | | | Mechanical/software interlock fault-injection test |
+| `CLASP-042` | §5.4 | Active side manual/unpowered mechanical release path | | | | X | Unpowered/depressurized emergency release demo |
+| `CLASP-050` | §6.1 | Qualified for LOX at 90 K (primary service fluid) | X | | | | Cryogenic flow & thermal soak campaign (§10.2 #3) |
+| `CLASP-051` | §6.1 | Qualified for LCH₄ at 112 K (secondary service fluid) *(should)* | X | X | | | Cryogenic compatibility & flow verification (recommended) |
+| `CLASP-052` | §6.1 | LH₂ service not supported in Revision A | | | X | | Scope and ICD compliance audit |
+| `CLASP-060` | §6.2 | Coaxial dual-poppet configuration, mutual displacement | | | X | X | Cross-section drawing audit + poppet stroke actuation check |
+| `CLASP-061` | §6.2 | Nominal flow bore 25 mm | | | X | | Bore gauge inspection |
+| `CLASP-062` | §6.2 | Design flow rate 2.0 kg/s LOX | X | | | | Cryogenic flow loop test measuring mass flow and ΔP |
+| `CLASP-063` | §6.2 | Coupling centred on Z axis | | | X | | Concentricity inspection relative to port datum |
+| `CLASP-070` | §6.3 | Trapped volume ≤ 5 cm³ | X | X | | | CAD volumetric analysis + demate capture/weigh test at BOL/EOL |
+| `CLASP-071` | §6.3 | Mated external leakage ≤ 1 × 10⁻⁴ scc/s helium | X | | | | Helium mass-spectrometer leak test at ambient & cryo BOL/EOL |
+| `CLASP-072` | §6.3 | Independent poppet seal ≤ 1 × 10⁻⁴ scc/s helium when demated | X | | | | Individual half helium leak test after mate/demate cycling |
+| `CLASP-080` | §6.4 | Dynamic seats PCTFE or metallic C-seals | | | X | | Material certification & drawing inspection |
+| `CLASP-081` | §6.4 | No elastomeric seals in cryogenic sealing functions | | | X | | BOM and wetted-part material audit |
+| `CLASP-082` | §6.4 | Non-metallic materials meet ASTM E595 (TML ≤ 1.0%, CVCM ≤ 0.10%) | X | | X | | Material batch test reports per ASTM E595 |
+| `CLASP-083` | §6.4 | LOX compatibility (NASA-STD-6001) & IEST-STD-CC1246 Level 100A | X | | X | | Batch LOX impact/compatibility certs + precision cleaning cert |
+| `CLASP-090` | §6.5 | Integral 2.0 mm nominal bypass orifice for pilot chilldown | | | X | X | Orifice inspection + pilot flow test prior to main stroke |
+| `CLASP-091` | §6.5 | Chilldown reduces receiving line/body to ≤ 120 K before main open | X | X | | | Cryo chilldown thermal test and transient thermal model |
+| `CLASP-092` | §6.5 | Chilldown state reported to active side before full transfer | X | | | X | Interlock test; `CLASP-F` reporting mechanism TBD (Open Item #13) |
+| `CLASP-100` | §6.6 | MEOP = 2.0 MPa | X | X | | | Functional pressure test at 2.0 MPa (cryo and ambient) |
+| `CLASP-101` | §6.6 | Proof pressure = 1.5 × MEOP (3.0 MPa) | X | | | | Hydrostatic/pneumatic proof test without permanent set |
+| `CLASP-102` | §6.6 | Burst pressure = 2.5 × MEOP (5.0 MPa) per ANSI/AIAA S-080 | X | X | | | Qualification unit burst test and stress analysis |
+| `CLASP-110` | §7 | Three independent dust mitigations provided | | | X | | System design audit (tier scope TBD — Open Item #11) |
+| `CLASP-111` | §7.1 | Interdigitated EDS electrode array on passive sealing face | | | X | | Fabrication drawing and visual/electrical inspection |
+| `CLASP-112` | §7.1 | EDS driven ≥ 1.0 kV p-p, 4-phase, 10 Hz nominal, ≤ 5 W | X | | | | High-voltage waveform and power-draw bench test |
+| `CLASP-113` | §7.1 | EDS power inductive from active side; no passive stored/wired power | X | | X | | Schematic audit + unpowered passive port activation test |
+| `CLASP-114` | §7.1 | ≥ 90% removal of particles ≥ 10 μm from sealing face | X | | | | Simulant dust-clearing test (metric basis TBD — Open Item #11) |
+| `CLASP-115` | §7.2 | Active side GOX purge pulse before contact | | | | X | Purge valve timing & plume demo (ignition hazard TBD — Open Item #11) |
+| `CLASP-116` | §7.2 | Purge consumption ≤ 0.5 g over 0.5 s per cycle | X | | | | Mass-flow / pressure-decay calibration test |
+| `CLASP-117` | §7.3 | Lead-in chamfers wipe sealing surfaces during mating stroke | | | X | X | CAD contact interference inspection + dust-wipe demo |
+| `CLASP-118` | §7.3 | Passive dust cover removable/replaceable by active end effector | | | | X | Robotic remove/stow/replace demonstration |
+| `CLASP-119` | §7.3 | Face-down or vertical port orientation where geometry permits *(should)* | | | X | | Payload integration drawing review |
+| `CLASP-120` | §8.1 | Inductive power transfer; no exposed contacts in primary path | | | X | X | Hardware inspection + contactless power transfer test |
+| `CLASP-121` | §8.1 | ≥ 500 W delivered at ≥ 85% end-to-end efficiency | X | | | | Loaded power efficiency test under dust & alignment extremes (Open Item #5) |
+| `CLASP-122` | §8.1 | Hardwired redundant discrete pair for safe/arm and inhibit | X | | X | | Continuity/isolation test (reconcile w/ `CLASP-120` — Open Item #12) |
+| `CLASP-130` | §8.2 | Short-range optical link ≥ 10 Mbit/s full duplex | X | | | | Bit-error-rate & throughput test over optical link |
+| `CLASP-131` | §8.2 | Optical link operates across full hard-latched alignment tolerance | X | | | | Optical link margin test at worst-case hard-latched offsets |
+| `CLASP-132` | §8.2 | Defined low-rate fallback over `[CLASP-122]` discrete pair | X | | | | Fallback comms test during simulated optical blockage (Open Item #12) |
+| `CLASP-140` | §8.3 | Asymmetric retroreflective fiducials on all tiers for 6-DOF pose | X | X | X | | Pose estimation test under low-angle lunar lighting simulation |
+| `CLASP-141` | §8.3 | Passive tag encoding tier, serial, contents, fill state, cycle count | X | | X | X | Tag read/write & protocol check (Open Item #14) |
+| `CLASP-142` | §8.3 | Fiducials and tag readable with zero passive-side power | | | | X | Cold/unpowered target acquisition & read demonstration |
+| `CLASP-150` | §9 | Survive/operate across thermal, vacuum, dust, 5-yr storage, cycle life | X | X | | | TVAC (500 cycles), dust campaign, radiation/launch analyses (Open Item #17) |
+| `CLASP-151` | §9 | Differential CTE does not compromise seal integrity or latch preload | X | X | | | Mated dissimilar-material cryo/hot thermal test + thermoelastic FEA |
+| `CLASP-160` | §10.2 | Full 6-part qualification campaign completed | X | | | X | Witnessed test reports covering §10.2 items 1–6 |
+| `CLASP-161` | §10.2 | Testing performed at CLASP-accredited conformance facility | | | X | | Facility accreditation certificate verification |
+| `CLASP-162` | §10.2 | Certified ports marked and entered in public registry | | | X | | Marking inspection and registry record audit |
+| `CLASP-170` | §11.3 | Governing body membership, open comment, and change control | | | X | | Governance charter audit (Open Item #1) |
+| `CLASP-171` | §11.3 | Backward compatibility of passive port geometry maintained | | | X | | Revision-over-revision ICD compatibility audit |
+
