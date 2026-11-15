@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 DOC_PATH = Path(__file__).resolve().parent.parent / "CLASP-STD-001_RevA_Working_Draft.md"
+ANNEX_PATH = Path(__file__).resolve().parent.parent / "Annex_A_Verification_Matrix_Draft.md"
 
 RFC2119_RE = re.compile(r"\*\*(shall not|shall|should not|should|may)\*\*")
 REQ_RE = re.compile(r"^`\[(CLASP-\d{3})\]`\s+(.*)$")
@@ -165,12 +166,24 @@ def main() -> int:
         return 0
 
     print(f"Parsed {len(sections)} numbered sections/subsections and {len(reqs)} [CLASP-nnn] requirements.")
+
+    if ANNEX_PATH.exists():
+        annex_text = ANNEX_PATH.read_text(encoding="utf-8")
+        spec_ids = {req_id for _, req_id, _ in reqs}
+        annex_ids = set(re.findall(r"`(CLASP-\d{3})`", annex_text))
+        missing_in_annex = sorted(spec_ids - annex_ids)
+        extra_in_annex = sorted(annex_ids - spec_ids)
+        if missing_in_annex:
+            errors.append(f"Annex A missing requirement IDs: {', '.join(missing_in_annex)}")
+        if extra_in_annex:
+            errors.append(f"Annex A has obsolete requirement IDs: {', '.join(extra_in_annex)}")
+
     if errors:
         print("\nLINT ERRORS:")
         for err in errors:
             print(f"  - {err}")
     else:
-        print("Spec lint: PASS (0 broken section refs, 0 ID/RFC-2119/reference errors).")
+        print("Spec lint & Annex A parity: PASS (0 broken section refs, 0 ID/RFC-2119/reference errors).")
 
     print()
     engineering_sanity_checks()
