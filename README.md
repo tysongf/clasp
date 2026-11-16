@@ -23,13 +23,19 @@ All three tiers share a single **`240 mm OD × ≤ 55 mm H`** external footprint
 ## Key Repository Deliverables
 
 - **Specification & Verification:**
-  - [CLASP-STD-001_RevA_Working_Draft.md](CLASP-STD-001_RevA_Working_Draft.md) ([PDF](CLASP-STD-001_RevA_Working_Draft.pdf)) — `62` numbered requirements across `40` sections/subsections.
+  - [CLASP-STD-001_RevA_Working_Draft.md](CLASP-STD-001_RevA_Working_Draft.md) ([PDF](CLASP-STD-001_RevA_Working_Draft.pdf) generated via [tools/build_pdf.py](tools/build_pdf.py)) — `62` numbered requirements across `40` sections/subsections.
   - [Annex_A_Verification_Matrix_Draft.md](Annex_A_Verification_Matrix_Draft.md) — Complete Verification Cross-Reference Matrix (`T / A / I / D`).
   - [tools/clasp_check.py](tools/clasp_check.py) — Zero-dependency spec linter, Annex A parity checker, and first-principles sizing script.
 - **Parametric CAD (`build123d`):**
   - [cad/clasp_m.py](cad/clasp_m.py) → [cad/CLASP-M.step](cad/CLASP-M.step) (`2.132 kg`, `758.60 cm³`).
   - [cad/clasp_m_dfm.py](cad/clasp_m_dfm.py) → [cad/CLASP-M-DFM.step](cad/CLASP-M-DFM.step) (`2.050 kg`, `729.39 cm³` — 2-setup CNC lathe + top-down 3-axis mill; quoted `$380.02 USD` Qty 1 economy prototype in `6061-T6` vs. `$473.97 USD` baseline).
   - [cad/clasp_fp_packaging.py](cad/clasp_fp_packaging.py) → [cad/CLASP-FP-Packaging.step](cad/CLASP-FP-Packaging.step) (`28/28` zero-overlap 3D B-Rep checks inside the `Ø 148 mm` central bore).
+  - [cad/clasp_a.py](cad/clasp_a.py) → [cad/CLASP-A-Latched.step](cad/CLASP-A-Latched.step), [cad/CLASP-A-OpenAligned.step](cad/CLASP-A-OpenAligned.step), & [cad/CLASP-A-MaxMisaligned.step](cad/CLASP-A-MaxMisaligned.step) (Annex B active end effector: `4`-jaw wide-scoop funnel at `45°/135°/225°/315°`, `3` cam followers, `3` over-center latches, `5/5` zero-overlap B-Rep checks in hard-latched and `+100 mm / +15°` capture states; `Ø 486.6 mm` keep-out clear above `Z = 18.0 mm`; `4.50 kg` mechanism / `8.09 kg` w/ FP core + camera).
+  - [tools/render_step.py](tools/render_step.py) → [cad/renders/](cad/renders/) — Headless 4-view (`Iso / +X / +Y / +Z`) STEP PNG renderer ([CLASP-M-DFM](cad/renders/CLASP-M-DFM_views.png), [CLASP-FP-Packaging](cad/renders/CLASP-FP-Packaging_views.png), [CLASP-A-Latched](cad/renders/CLASP-A-Latched_views.png), [CLASP-A-OpenAligned](cad/renders/CLASP-A-OpenAligned_views.png), [CLASP-A-MaxMisaligned](cad/renders/CLASP-A-MaxMisaligned_views.png)).
+
+![CLASP-A Hard-Latched 4-View CAD Render](cad/renders/CLASP-A-Latched_views.png)
+
+![CLASP-A Max-Misaligned (+100 mm X / +15 deg Pitch) Soft-Capture 4-View CAD Render](cad/renders/CLASP-A-MaxMisaligned_views.png)
 - **Structural FEA (`gmsh` + `scikit-fem`):**
   - [fea/clasp_m_fea.py](fea/clasp_m_fea.py) — Quadratic `Tet10` 3D linear-elastic FEA (`~92k` DOFs) under `[CLASP-030]`/`[CLASP-031]` combined worst-case loads:
     - `CLASP-M`: `82.3 MPa` limit / `115.3 MPa` ultimate (`+3.21` yield / `+3.37` ult body MoS with `0.80×` `+120 °C` hot-soak knockdown).
@@ -53,9 +59,11 @@ python3 tools/clasp_check.py
 cmake -S ledger -B ledger/build && cmake --build ledger/build -j
 ctest --test-dir ledger/build --output-on-failure
 
-# 3. Run CAD / FEA / Perception pipelines (inside .venv)
+# 3. Run CAD / Visual Render / FEA / Perception pipelines (inside .venv)
 python cad/clasp_m_dfm.py
 python cad/clasp_fp_packaging.py
+python cad/clasp_a.py
+python tools/render_step.py cad/CLASP-M-DFM.step cad/CLASP-FP-Packaging.step cad/CLASP-A-Latched.step cad/CLASP-A-OpenAligned.step cad/CLASP-A-MaxMisaligned.step
 python fea/clasp_m_fea.py --step cad/CLASP-M-DFM.step --order 2 --lc-min 2.5 --lc-max 7.5
 python -m perception.run_benchmark_and_demo
 ```

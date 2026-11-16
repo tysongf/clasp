@@ -21,12 +21,12 @@
 | `CLASP-010` | §4.2 | 240 mm circular footprint, ≤ 55 mm protrusion above mounting plane | | | X | | Dimensional CMM / gauge inspection |
 | `CLASP-011` | §4.2 | 8 × M8 on 210 mm BCD, 15° clocking offset | | | X | | Dimensional inspection and fastener fit gauge |
 | `CLASP-012` | §4.2 | Passive port mass limits (3.5 kg / 6.0 kg / 7.5 kg) | | | X | | Calibrated scale measurement of flight-representative hardware |
-| `CLASP-020` | §5.1 | Soft capture via external perimeter grapple across 6-DOF envelope | X | X | | | Dynamic 6-DOF capture rig across extreme corners (§10.2 #4); groove/KOZ TBD (Open Item #15) |
+| `CLASP-020` | §5.1 | Soft capture via external perimeter grapple across 6-DOF envelope | X | X | | | Dynamic 6-DOF capture rig across extreme corners (§10.2 #4); preliminary CAD funnel/KOZ (`Ø 486.6 mm` above `Z = 18 mm`) in `cad/clasp_a.py`, formal spec Open Item #15 |
 | `CLASP-021` | §5.2 | Alignment via three 120° helical cam ramps during retraction | | | X | X | Geometry inspection + kinematic retraction demo |
 | `CLASP-022` | §5.2 | Cam lead angle 15° ± 2° for alignment/retraction; positive latch retention | X | X | X | | Angle inspection; positive latch retention test under §5.3 loads (Open Item #15) |
 | `CLASP-023` | §5.2 | One ramp geometrically distinct for unambiguous clocking | | | X | X | Inspection + intentional 120°/240° mis-clock rejection test |
 | `CLASP-024` | §5.2 | Passive alignment geometry; no powered actuation on passive side | | | X | | Schematic and BOM audit |
-| `CLASP-030` | §5.3 | Limit loads (10 kN axial, 5 kN shear, 2.0 kN·m bend, 1.0 kN·m torsion) | X | X | | | Static load frame test; load combination & stiffness TBD (Open Item #15/#16) |
+| `CLASP-030` | §5.3 | Limit loads (10 kN axial, 5 kN shear, 2.0 kN·m bend, 1.0 kN·m torsion) | X | X | | | Static load frame test + preliminary `Tet10` FEA (`fea/clasp_m_fea.py`); combined/stiffness/dowel spec TBD (Open Item #15/#16) |
 | `CLASP-031` | §5.3 | Yield FoS ≥ 1.25 and ultimate FoS ≥ 1.4 on limit load | X | X | | | FEA stress report + coupon/assembly load test to 1.4× limit |
 | `CLASP-032` | §5.3 | Positive mechanical latch maintains preload without gapping | X | X | | | Displacement/gap sensor check under combined limit loading |
 | `CLASP-040` | §5.4 | Confirmed 6-stage mating sequence | | | | X | Active end effector state-machine telemetry log |
@@ -67,8 +67,8 @@
 | `CLASP-122` | §8.1 | Non-contact safe/arm & inhibits (mechanical fluid + magnetic/Hall power) | X | | X | | Fault-injection and latch-seat inhibit test (Open Item #12) |
 | `CLASP-130` | §8.2 | Short-range optical link ≥ 10 Mbit/s full duplex | X | | | | Bit-error-rate & throughput test over optical link |
 | `CLASP-131` | §8.2 | Optical link operates across full hard-latched alignment tolerance | X | | | | Optical link margin test at worst-case hard-latched offsets |
-| `CLASP-140` | §8.3 | Asymmetric retroreflective fiducials on all tiers for 6-DOF pose | X | X | X | | Pose estimation test under low-angle lunar lighting simulation |
-| `CLASP-141` | §8.3 | Static optical DataMatrix tag (tier, serial); dynamic state in fleet ledger | | | X | X | Optical read test under polar lighting + ledger sync check (Open Item #14) |
+| `CLASP-140` | §8.3 | Asymmetric retroreflective fiducials on all tiers for 6-DOF pose | X | X | X | | Pose estimation test under low-angle lunar lighting simulation (`cad/clasp_m.py` 5-boss geometry & `perception/` benchmark) |
+| `CLASP-141` | §8.3 | Static optical DataMatrix tag (tier, serial); dynamic state in fleet ledger | | | X | X | Optical read test (`18 × 18 mm` pad) under polar lighting + `ledger/` C++20 SQLite sync check (Open Item #14) |
 | `CLASP-142` | §8.3 | Fiducials and tag readable with zero passive-side power | | | | X | Cold/unpowered target acquisition & read demonstration |
 | `CLASP-150` | §9 | Survive/operate across thermal, vacuum, dust, 5-yr storage, cycle life | X | X | | | TVAC (500 cycles), dust campaign, radiation/launch analyses (Open Item #17) |
 | `CLASP-151` | §9 | Differential CTE does not compromise seal integrity or latch preload | X | X | | | Mated dissimilar-material cryo/hot thermal test + thermoelastic FEA |

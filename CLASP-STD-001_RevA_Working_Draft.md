@@ -119,7 +119,7 @@ The key words **shall**, **shall not**, **should**, **should not**, and **may** 
 
 ### 4.3 Coordinate frame
 
-The port frame origin lies at the centre of the mating plane *(axial datum offset from the payload mounting plane, plus payload keep-out zones, to be defined in Revision B)*.
+The port frame origin lies at the centre of the mating plane *(working CAD baseline: `44.0 mm` axial offset from the `Z = 0` payload mounting flange to the collar cam datum, with `Ø 486.6 mm` active-grapple keep-out clear above `Z = 18.0 mm` in `cad/clasp_a.py`; formal datum and KOZ drawing to be frozen in Revision B)*.
 
 - **+Z** — along the mating axis, positive outward from the payload
 - **+X** — in the mating plane, aligned with the primary keying feature
@@ -131,7 +131,7 @@ The port frame origin lies at the centre of the mating plane *(axial datum offse
 
 ### 5.1 Capture envelope
 
-`[CLASP-020]` The interface **shall** achieve soft capture across the following misalignment envelope via an external perimeter grapple feature *(grapple groove profile and payload keep-out zone TBD in Revision B)*:
+`[CLASP-020]` The interface **shall** achieve soft capture across the following misalignment envelope via an external perimeter grapple feature *(working CAD baseline: `240 mm` OD `Z = 32–44 mm` collar undercut in `cad/clasp_m_dfm.py` and `4`-jaw `CLASP-A` funnel with `Ø 486.6 mm` keep-out above `Z = 18.0 mm` in `cad/clasp_a.py`; formal groove tolerances TBD in Revision B)*:
 
 | Parameter | Tolerance |
 |---|---|
@@ -307,9 +307,9 @@ Lunar regolith is unweathered, electrostatically charged, and mechanically abras
 
 ### 8.3 Passive identification (All tiers)
 
-`[CLASP-140]` Every port, all tiers, **shall** carry passive retroreflective fiducials in an asymmetric pattern sufficient for six-degree-of-freedom pose estimation.
+`[CLASP-140]` Every port, all tiers, **shall** carry passive retroreflective fiducials in an asymmetric pattern sufficient for six-degree-of-freedom pose estimation *(working CAD baseline: `5 × Ø 10 mm` bosses on `R = 105 mm` at `18°, 68°, 112°, 196°, 300°`; optical coating spec TBD in Revision B)*.
 
-`[CLASP-141]` Every port, all tiers, **shall** carry a permanent, machine-readable static optical DataMatrix tag encoding, at minimum: port tier and unique serial number *(physical sizing and laser-etch contrast specification TBD in Revision B)*. Dynamic operational state (payload contents, fill state, and accumulated cycle count) **shall** be maintained in active-side and fleet ledger records keyed by unique serial.
+`[CLASP-141]` Every port, all tiers, **shall** carry a permanent, machine-readable static optical DataMatrix tag encoding, at minimum: port tier and unique serial number *(working CAD baseline: `18 × 18 mm` pad at `247.5°, R = 105 mm`; physical tolerance and laser-etch contrast specification TBD in Revision B)*. Dynamic operational state (payload contents, fill state, and accumulated cycle count) **shall** be maintained in active-side and fleet ledger records keyed by unique serial.
 
 `[CLASP-142]` Fiducials and DataMatrix tag **shall** be readable with no power on the passive side using the active-side pose-estimation imaging system.
 
@@ -401,15 +401,15 @@ Early adoption targets nationally funded and commercial lunar surface hardware s
 | 4 | Multi-port load-sharing rules and tolerance stack-up |
 | 5 | Confirm inductive power efficiency achievable at 500 W under dust loading |
 | 6 | EDS electrode durability across 1,000 mate cycles with mechanical wiping (§7.1 and §7.3 may be in tension) |
-| 7 | Reference active end effector interface control document |
-| 8 | Cost model validating the CAD 2,000 recurring target for CLASP-M |
+| 7 | Reference active end effector interface control document *(draft 4-jaw `CLASP-A` CAD/kinematics modeled in `cad/clasp_a.py`; formal ICD & mechanism tolerances TBD)* |
+| 8 | Cost model validating the CAD 2,000 recurring target for `CLASP-M` *(initial `CLASP-M-DFM.step` commercial `Al 6061-T6` Qty 1 economy quote well below target; `Al 7075-T6` lot/inspection pricing TBD)* |
 | 9 | Position on liquid hydrogen for a future CLASP-FH tier |
 | 10 | Cross-compatibility assessment against IDSS and any emerging cargo standards |
 | 11 | Confirm inductive EDS packaging for `CLASP-F`/`CLASP-FP` (passive sealing face vs. active-side sweep) and dust-removal metric basis (`[CLASP-114]`) |
 | 12 | Validate safety-panel fault-tree compliance for zero-pin mechanical + magnetic/Hall inhibits (`[CLASP-122]`) |
 | 13 | Define 2.0 mm bypass orifice demated sealing (`[CLASP-072]`), two-phase chilldown boiloff venting, and active-side flange contact thermometry accuracy (`[CLASP-092]`) |
-| 14 | Specify optical DataMatrix physical sizing, laser-etch contrast, and fiducial placement geometry (`[CLASP-140]`, `[CLASP-141]`) |
-| 15 | Define external perimeter grapple groove geometry, positive mechanical latch features, payload keep-out zones, mounting datum offset, passive cover interface, and hard-latched alignment tolerances |
+| 14 | Freeze optical DataMatrix physical tolerances, laser-etch contrast, and fiducial coating specs (`[CLASP-140]`, `[CLASP-141]`) *(reference `18 × 18 mm` pad & 5-fiducial polar-shadow benchmark in `cad/clasp_m.py` & `perception/`)* |
+| 15 | Freeze external perimeter grapple groove geometry, positive latch tolerances, keep-out zones (`Ø 486.6 mm` above `Z = 18.0 mm` baseline in `cad/clasp_a.py`), `44.0 mm` datum offset, passive cover interface, and latched tolerances |
 | 16 | Review 2.0 kN·m bending moment limit (`[CLASP-030]`) against representative payload CG offsets and add shear/torsion locating dowel pins |
 | 17 | Add launch vibration/shock, 30–50 K PSR survival, radiation/UV dose, UHV anti-galling/cold-welding, and ESD electrical bonding requirements (§9) |
 
@@ -417,11 +417,11 @@ Early adoption targets nationally funded and commercial lunar surface hardware s
 
 ## Annex A — Verification cross-reference matrix
 
-*To be issued with Revision B.*
+*Working draft covering all `62` `[CLASP-nnn]` requirements is maintained in `Annex_A_Verification_Matrix_Draft.md` and parity-checked by `tools/clasp_check.py`. Formal baseline to be frozen with Revision B.*
 
 ## Annex B — Reference active end effector ICD
 
-*To be issued with Revision B.*
+*Working parametric CAD and capture-kinematics baseline (`CLASP-A`: `4`-jaw scoop funnel, `3` cam followers, `3` over-center positive latches, `4.50 kg` mechanism / `8.09 kg` with active `CLASP-FP` core) is maintained in `cad/clasp_a.py` and `cad/CLASP-A-*.step`. Formal ICD drawing to be frozen with Revision B.*
 
 ---
 
