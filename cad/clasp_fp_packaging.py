@@ -22,11 +22,15 @@ from build123d import (
     Align,
     Box,
     BuildPart,
+    BuildSketch,
     Compound,
     Cylinder,
     Locations,
     Mode,
+    Plane,
+    Polygon,
     export_step,
+    extrude,
 )
 
 # Allow direct execution as `python cad/clasp_fp_packaging.py`
@@ -50,13 +54,15 @@ class ClaspFPPackagingSpec:
     fluid_flange_height_mm: float = 12.0
     fluid_mating_z_mm: float = 48.0  # <= 55.0 mm
 
-    # Structural cartridge ring + 4 Ti-6Al-4V thermal-break mounting spokes
+    # Structural cartridge ring + 4 Ti-6Al-4V tangential flexure thermal-break spokes ([CLASP-151])
     cartridge_id_mm: float = 138.0  # R = 69.0 mm
     cartridge_od_mm: float = 147.0  # R = 73.5 mm
     cartridge_z0_mm: float = 0.0
     cartridge_height_mm: float = 28.0
     spoke_angles_deg: tuple[float, ...] = (45.0, 135.0, 225.0, 315.0)
-    spoke_width_mm: float = 6.0
+    spoke_width_mm: float = 2.6  # Slender tangential flexure thickness (radially compliant)
+    spoke_flex_radius_mm: float = 50.0
+    spoke_flex_sweep_deg: float = 48.0
     spoke_z0_mm: float = 4.0
     spoke_height_mm: float = 10.0
 
@@ -122,11 +128,14 @@ def build_fluid_coupling(spec: ClaspFPPackagingSpec):
 
 
 def build_thermal_cartridge(spec: ClaspFPPackagingSpec):
-    """Build outer bore-mounted cartridge sleeve and 4 Ti-6Al-4V thermal-break spokes."""
+    """Build outer bore-mounted cartridge sleeve and 4 tangential Ti-6Al-4V flexure spokes."""
     r_inner_spoke = spec.fluid_flange_od_mm / 2.0 - 0.5
     r_outer_spoke = spec.cartridge_id_mm / 2.0 + 0.5
-    spoke_len = r_outer_spoke - r_inner_spoke
-    r_mid = 0.5 * (r_inner_spoke + r_outer_spoke)
+    r_flex = spec.spoke_flex_radius_mm
+    half_t = spec.spoke_width_mm / 2.0
+    r_flex_in = r_flex - half_t
+    r_flex_out = r_flex + half_t
+    stub_w = max(spec.spoke_width_mm + 0.6, 3.2)
 
     with BuildPart() as p:
         with Locations((0, 0, spec.cartridge_z0_mm)):
@@ -141,16 +150,37 @@ def build_thermal_cartridge(spec: ClaspFPPackagingSpec):
                 align=(Align.CENTER, Align.CENTER, Align.MIN),
                 mode=Mode.SUBTRACT,
             )
+        z_plane = Plane.XY.offset(spec.spoke_z0_mm)
         for ang in spec.spoke_angles_deg:
-            rad = math.radians(ang)
-            with Locations((r_mid * math.cos(rad), r_mid * math.sin(rad), spec.spoke_z0_mm)):
-                Box(
-                    spoke_len,
-                    spec.spoke_width_mm,
-                    spec.spoke_height_mm,
-                    rotation=(0, 0, ang),
-                    align=(Align.CENTER, Align.CENTER, Align.MIN),
-                )
+            ang_out = ang + spec.spoke_flex_sweep_deg
+            r_in_mid = 0.5 * (r_inner_spoke + (r_flex_out - 0.3))
+            r_in_len = (r_flex_out - 0.3) - r_inner_spoke
+            r_out_mid = 0.5 * ((r_flex_in + 0.3) + r_outer_spoke)
+            r_out_len = r_outer_spoke - (r_flex_in + 0.3)
+
+            rad_in = math.radians(ang)
+            with Locations((r_in_mid * math.cos(rad_in), r_in_mid * math.sin(rad_in), spec.spoke_z0_mm)):
+                Box(r_in_len, stub_w, spec.spoke_height_mm, rotation=(0, 0, ang), align=(Align.CENTER, Align.CENTER, Align.MIN))
+
+            rad_out = math.radians(ang_out)
+            with Locations((r_out_mid * math.cos(rad_out), r_out_mid * math.sin(rad_out), spec.spoke_z0_mm)):
+                Box(r_out_len, stub_w, spec.spoke_height_mm, rotation=(0, 0, ang_out), align=(Align.CENTER, Align.CENTER, Align.MIN))
+
+            n_pts = 18
+            a0 = math.radians(ang - 1.5)
+            a1 = math.radians(ang_out + 1.5)
+            outer_pts = [
+                (r_flex_out * math.cos(a0 + (a1 - a0) * i / n_pts), r_flex_out * math.sin(a0 + (a1 - a0) * i / n_pts))
+                for i in range(n_pts + 1)
+            ]
+            inner_pts = [
+                (r_flex_in * math.cos(a1 - (a1 - a0) * i / n_pts), r_flex_in * math.sin(a1 - (a1 - a0) * i / n_pts))
+                for i in range(n_pts + 1)
+            ]
+            with BuildSketch(z_plane):
+                Polygon(*(outer_pts + inner_pts), align=None)
+            extrude(amount=spec.spoke_height_mm)
+
         # Ensure clean subtraction of fluid flange boundary so zero overlap exists
         with Locations((0, 0, spec.fluid_flange_z0_mm)):
             Cylinder(

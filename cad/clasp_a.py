@@ -42,6 +42,7 @@ from build123d import (
     Polygon,
     export_step,
     extrude,
+    fillet,
 )
 
 if __package__ is None or __package__ == "":
@@ -80,12 +81,13 @@ class ClaspASpec:
     follower_offset_deg: float = -18.5
     follower_radius_mm: float = 83.0
 
-    # 3x Positive over-center latch hooks (30, 150, 270 deg) engaging Z = 32 mm undercut
+    # 3x Positive over-center latch hooks (30, 150, 270 deg; 17-4PH H900 w/ R3.5 mm throat fillet)
     latch_angles_deg: tuple[float, ...] = (30.0, 150.0, 270.0)
     latch_hook_inner_r_mm: float = 104.0  # Clears Ø172 mm (R=86) waist by 18 mm
     latch_hook_outer_r_mm: float = 138.0
     latch_z_bottom_mm: float = 22.0
     latch_z_engage_mm: float = 31.5  # 0.5 mm clearance below Z = 32.0 collar lip
+    latch_throat_fillet_mm: float = 3.5  # Eliminates sharp inner corner stress riser under 14.2 kN uplift
 
     # 4x Wide-opening soft-capture funnel jaws (45, 135, 225, 315 deg -> >230 mm inscribed R all 360 deg)
     jaw_angles_deg: tuple[float, ...] = (45.0, 135.0, 225.0, 315.0)
@@ -174,39 +176,53 @@ def build_cam_followers(spec: ClaspASpec):
     return solid
 
 
+def build_latch_hook_solid(spec: ClaspASpec, ang_deg: float, open_state: bool = False):
+    """Build one L-shaped positive latch hook (with R3.5 mm throat fillet when closed)."""
+    rad = math.radians(ang_deg)
+    rx, ry = math.cos(rad), math.sin(rad)
+    tx, ty = -math.sin(rad), math.cos(rad)
+    radial_plane = Plane(origin=(0.0, 0.0, 0.0), x_dir=(rx, ry, 0.0), z_dir=(-tx, -ty, 0.0))
+    # Open latches retract upward & outward (z >= 43 mm, r >= 130 mm) during soft capture
+    r_in = 130.0 if open_state else spec.latch_hook_inner_r_mm
+    r_out = 148.0 if open_state else spec.latch_hook_outer_r_mm
+    r_wall = 134.0 if open_state else 123.5
+    z_bot = 43.0 if open_state else spec.latch_z_bottom_mm
+    z_eng = 47.0 if open_state else spec.latch_z_engage_mm
+    z_top = spec.carriage_z0_mm + spec.carriage_height_mm - 2.0
+
+    with BuildPart() as hp:
+        with BuildSketch(radial_plane):
+            Polygon(
+                (r_in, z_bot),
+                (r_out, z_bot),
+                (r_out, z_top),
+                (r_wall, z_top),
+                (r_wall, z_eng),
+                (r_in, z_eng),
+                align=None,
+            )
+        extrude(amount=11.0, both=True)
+        if not open_state and spec.latch_throat_fillet_mm > 0.0:
+            throat_edges = [
+                e for e in hp.edges()
+                if abs(math.hypot(e.center().X, e.center().Y) - r_wall) < 0.25
+                and abs(e.center().Z - z_eng) < 0.25
+            ]
+            if throat_edges:
+                fillet(throat_edges, radius=spec.latch_throat_fillet_mm)
+    return hp.part
+
+
 def build_positive_latches(spec: ClaspASpec, open_state: bool = False):
     """Build 3 one-piece L-shaped positive latch hooks hinged to carriage clevises."""
-    with BuildPart() as p:
-        for ang in spec.latch_angles_deg:
-            rad = math.radians(ang)
-            rx, ry = math.cos(rad), math.sin(rad)
-            tx, ty = -math.sin(rad), math.cos(rad)
-            radial_plane = Plane(origin=(0.0, 0.0, 0.0), x_dir=(rx, ry, 0.0), z_dir=(-tx, -ty, 0.0))
-            # Open latches retract upward & outward (z >= 43 mm, r >= 130 mm) during soft capture
-            r_in = 130.0 if open_state else spec.latch_hook_inner_r_mm
-            r_out = 148.0 if open_state else spec.latch_hook_outer_r_mm
-            r_wall = 134.0 if open_state else 123.5
-            z_bot = 43.0 if open_state else spec.latch_z_bottom_mm
-            z_eng = 47.0 if open_state else spec.latch_z_engage_mm
-            z_top = spec.carriage_z0_mm + spec.carriage_height_mm - 2.0
-            with BuildSketch(radial_plane):
-                Polygon(
-                    (r_in, z_bot),
-                    (r_out, z_bot),
-                    (r_out, z_top),
-                    (r_wall, z_top),
-                    (r_wall, z_eng),
-                    (r_in, z_eng),
-                    align=None,
-                )
-            extrude(amount=11.0, both=True)
-    solid = p.part
+    hooks = [build_latch_hook_solid(spec, ang, open_state=open_state) for ang in spec.latch_angles_deg]
+    solid = Compound(children=hooks)
     solid.label = "CLASP_A_Positive_Latches_Open" if open_state else "CLASP_A_Positive_Latches"
     return solid
 
 
-def build_capture_jaws(spec: ClaspASpec, open_state: bool):
-    """Build 3 single-piece articulated capture jaws with wide flared funnel paddles."""
+def build_capture_jaw_solid(spec: ClaspASpec, ang_deg: float, open_state: bool):
+    """Build one single-piece articulated capture jaw with wide flared funnel paddle."""
     r_piv = spec.jaw_pivot_r_mm
     z_piv = spec.jaw_pivot_z_mm
     r_tip = spec.jaw_open_radius_mm if open_state else spec.jaw_closed_radius_mm
@@ -216,49 +232,54 @@ def build_capture_jaws(spec: ClaspASpec, open_state: bool):
     r_tip_out = r_tip + 14.0
     paddle_h = 30.0 if open_state else 12.0
 
-    with BuildPart() as p:
-        for ang in spec.jaw_angles_deg:
-            rad = math.radians(ang)
-            rx, ry = math.cos(rad), math.sin(rad)
-            tx, ty = -math.sin(rad), math.cos(rad)
-            radial_plane = Plane(origin=(0.0, 0.0, 0.0), x_dir=(rx, ry, 0.0), z_dir=(-tx, -ty, 0.0))
+    rad = math.radians(ang_deg)
+    rx, ry = math.cos(rad), math.sin(rad)
+    tx, ty = -math.sin(rad), math.cos(rad)
+    radial_plane = Plane(origin=(0.0, 0.0, 0.0), x_dir=(rx, ry, 0.0), z_dir=(-tx, -ty, 0.0))
 
-            with BuildSketch(radial_plane):
-                if open_state:
-                    Polygon(
-                        (r_piv - 6.0, z_piv + 8.0),
-                        (r_back, z_piv + 8.0),
-                        (r_tip_out, z_tip + paddle_h),
-                        (r_tip_out, z_tip),
-                        (r_tip, z_tip),
-                        (r_tip - 4.0, z_tip + 16.0),
-                        (r_piv - 6.0, z_piv - 8.0),
-                        align=None,
-                    )
-                else:
-                    Polygon(
-                        (r_piv - 6.0, z_piv + 8.0),
-                        (r_back, z_piv + 8.0),
-                        (r_tip_out, z_tip),
-                        (r_tip, z_tip),
-                        (r_tip, z_tip + paddle_h),
-                        (r_piv - 6.0, z_piv - 8.0),
-                        align=None,
-                    )
-            extrude(amount=14.0, both=True)
-
-            # Wide tangential capture scoop wing at open tip (170 mm wide -> true 360-deg capture funnel)
+    with BuildPart() as jp:
+        with BuildSketch(radial_plane):
             if open_state:
-                with Locations((r_tip * rx, r_tip * ry, z_tip + 0.5 * paddle_h)):
-                    Box(14.0, 170.0, paddle_h, rotation=(0.0, 0.0, ang), align=(Align.CENTER, Align.CENTER, Align.CENTER))
+                Polygon(
+                    (r_piv - 6.0, z_piv + 8.0),
+                    (r_back, z_piv + 8.0),
+                    (r_tip_out, z_tip + paddle_h),
+                    (r_tip_out, z_tip),
+                    (r_tip, z_tip),
+                    (r_tip - 4.0, z_tip + 16.0),
+                    (r_piv - 6.0, z_piv - 8.0),
+                    align=None,
+                )
+            else:
+                Polygon(
+                    (r_piv - 6.0, z_piv + 8.0),
+                    (r_back, z_piv + 8.0),
+                    (r_tip_out, z_tip),
+                    (r_tip, z_tip),
+                    (r_tip, z_tip + paddle_h),
+                    (r_piv - 6.0, z_piv - 8.0),
+                    align=None,
+                )
+        extrude(amount=14.0, both=True)
 
-            # Hinged clevis pin along tangential axis at (r_piv, z_piv)
-            pin_plane = Plane(origin=(r_piv * rx, r_piv * ry, z_piv), x_dir=(rx, ry, 0.0), z_dir=(-tx, -ty, 0.0))
-            with BuildSketch(pin_plane):
-                Circle(radius=5.0)
-            extrude(amount=20.0, both=True)
+        # Wide tangential capture scoop wing at open tip (170 mm wide -> true 360-deg capture funnel)
+        if open_state:
+            with Locations((r_tip * rx, r_tip * ry, z_tip + 0.5 * paddle_h)):
+                Box(14.0, 170.0, paddle_h, rotation=(0.0, 0.0, ang_deg), align=(Align.CENTER, Align.CENTER, Align.CENTER))
 
-    solid = p.part
+        # Hinged clevis pin along tangential axis at (r_piv, z_piv)
+        pin_plane = Plane(origin=(r_piv * rx, r_piv * ry, z_piv), x_dir=(rx, ry, 0.0), z_dir=(-tx, -ty, 0.0))
+        with BuildSketch(pin_plane):
+            Circle(radius=5.0)
+        extrude(amount=20.0, both=True)
+
+    return jp.part
+
+
+def build_capture_jaws(spec: ClaspASpec, open_state: bool):
+    """Build 4 single-piece articulated capture jaws with wide flared funnel paddles."""
+    jaws = [build_capture_jaw_solid(spec, ang, open_state=open_state) for ang in spec.jaw_angles_deg]
+    solid = Compound(children=jaws)
     solid.label = "CLASP_A_Capture_Jaws_Open" if open_state else "CLASP_A_Capture_Jaws_Closed"
     return solid
 
@@ -344,9 +365,10 @@ def verify_clasp_a(m_solid, m_spec: ClaspMDFMSpec, a_spec: ClaspASpec) -> dict[s
         core_cam.moved(aligned_open_loc),
     ]
 
-    # Mass estimate of mechanical CLASP-A (Al 7075-T6 effective ~65% fill factor for housings/actuators)
-    vol_cm3 = sum(p.volume for p in (chassis, followers, latches, jaws_closed)) / 1000.0
-    mech_mass_kg = (vol_cm3 * 0.65 * AL_7075_T6_DENSITY_G_CM3) / 1000.0
+    # Mass estimate: Al 7075-T6 housings/jaws (~65% fill factor) + 17-4PH H900 hooks/followers (7.75 g/cm^3)
+    al_vol_cm3 = (chassis.volume + jaws_closed.volume) / 1000.0
+    steel_vol_cm3 = (followers.volume + latches.volume) / 1000.0
+    mech_mass_kg = (al_vol_cm3 * 0.65 * AL_7075_T6_DENSITY_G_CM3 + steel_vol_cm3 * 7.75) / 1000.0
     core_mass_kg = ((core_cam.volume / 1000.0) * 3.80) / 1000.0
 
     # Clone m_solid per Compound so build123d/anytree does not re-parent it out of earlier assemblies

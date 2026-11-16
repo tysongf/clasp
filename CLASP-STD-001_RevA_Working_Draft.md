@@ -402,7 +402,7 @@ Early adoption targets nationally funded and commercial lunar surface hardware s
 | 5 | Confirm inductive power efficiency achievable at 500 W under dust loading |
 | 6 | EDS electrode durability across 1,000 mate cycles with mechanical wiping (§7.1 and §7.3 may be in tension) |
 | 7 | Reference active end effector interface control document *(draft 4-jaw `CLASP-A` CAD/kinematics modeled in `cad/clasp_a.py`; formal ICD & mechanism tolerances TBD)* |
-| 8 | Cost model validating the CAD 2,000 recurring target for `CLASP-M` *(initial `CLASP-M-DFM.step` commercial `Al 6061-T6` Qty 1 economy quote well below target; `Al 7075-T6` lot/inspection pricing TBD)* |
+| 8 | Cost model validating the CAD 2,000 recurring target for `CLASP-M` *(initial `CLASP-M-DFM.step` commercial `Al 6061-T6` Qty 1 economy quote well below target for cold benchtop fit tests; discrete-latch FEA requires `Al 7075-T6` for hot `[CLASP-031]` service — flight-lot `7075-T6` pricing TBD)* |
 | 9 | Position on liquid hydrogen for a future CLASP-FH tier |
 | 10 | Cross-compatibility assessment against IDSS and any emerging cargo standards |
 | 11 | Confirm inductive EDS packaging for `CLASP-F`/`CLASP-FP` (passive sealing face vs. active-side sweep) and dust-removal metric basis (`[CLASP-114]`) |
@@ -421,7 +421,7 @@ Early adoption targets nationally funded and commercial lunar surface hardware s
 
 ## Annex B — Reference active end effector ICD
 
-*Working parametric CAD and capture-kinematics baseline (`CLASP-A`: `4`-jaw scoop funnel, `3` cam followers, `3` over-center positive latches, `4.50 kg` mechanism / `8.09 kg` with active `CLASP-FP` core) is maintained in `cad/clasp_a.py` and `cad/CLASP-A-*.step`. Formal ICD drawing to be frozen with Revision B.*
+*Working parametric CAD and capture-kinematics baseline (`CLASP-A`: `4`-jaw `Al 7075-T6` scoop funnel, `3` cam followers, `3` `17-4PH H900` over-center positive latches with `R3.5 mm` throat fillet, `4.81 kg` mechanism / `8.40 kg` with active `CLASP-FP` core) is maintained in `cad/clasp_a.py` and `cad/CLASP-A-*.step`. Formal ICD drawing to be frozen with Revision B.*
 
 ---
 

@@ -26,8 +26,8 @@
 | `CLASP-022` | §5.2 | Cam lead angle 15° ± 2° for alignment/retraction; positive latch retention | X | X | X | | Angle inspection; positive latch retention test under §5.3 loads (Open Item #15) |
 | `CLASP-023` | §5.2 | One ramp geometrically distinct for unambiguous clocking | | | X | X | Inspection + intentional 120°/240° mis-clock rejection test |
 | `CLASP-024` | §5.2 | Passive alignment geometry; no powered actuation on passive side | | | X | | Schematic and BOM audit |
-| `CLASP-030` | §5.3 | Limit loads (10 kN axial, 5 kN shear, 2.0 kN·m bend, 1.0 kN·m torsion) | X | X | | | Static load frame test + preliminary `Tet10` FEA (`fea/clasp_m_fea.py`); combined/stiffness/dowel spec TBD (Open Item #15/#16) |
-| `CLASP-031` | §5.3 | Yield FoS ≥ 1.25 and ultimate FoS ≥ 1.4 on limit load | X | X | | | FEA stress report + coupon/assembly load test to 1.4× limit |
+| `CLASP-030` | §5.3 | Limit loads (10 kN axial, 5 kN shear, 2.0 kN·m bend, 1.0 kN·m torsion) | X | X | | | Static load frame test + discrete/clocked `Tet10` FEA (`fea/clasp_m_detailed_fea.py`, `fea/clasp_a_fea.py`); combined/stiffness/dowel spec TBD (Open Item #15/#16) |
+| `CLASP-031` | §5.3 | Yield FoS ≥ 1.25 and ultimate FoS ≥ 1.4 on limit load | X | X | | | FEA stress report (`Al 7075-T6` port/jaws + `17-4PH H900` hooks verified `+0.51..+0.77` hot) + coupon/assembly load test to 1.4× limit |
 | `CLASP-032` | §5.3 | Positive mechanical latch maintains preload without gapping | X | X | | | Displacement/gap sensor check under combined limit loading |
 | `CLASP-040` | §5.4 | Confirmed 6-stage mating sequence | | | | X | Active end effector state-machine telemetry log |
 | `CLASP-041` | §5.4 | Fluid poppets prohibited from opening before hard latch confirmation | X | X | | | Mechanical/software interlock fault-injection test |
@@ -71,7 +71,7 @@
 | `CLASP-141` | §8.3 | Static optical DataMatrix tag (tier, serial); dynamic state in fleet ledger | | | X | X | Optical read test (`18 × 18 mm` pad) under polar lighting + `ledger/` C++20 SQLite sync check (Open Item #14) |
 | `CLASP-142` | §8.3 | Fiducials and tag readable with zero passive-side power | | | | X | Cold/unpowered target acquisition & read demonstration |
 | `CLASP-150` | §9 | Survive/operate across thermal, vacuum, dust, 5-yr storage, cycle life | X | X | | | TVAC (500 cycles), dust campaign, radiation/launch analyses (Open Item #17) |
-| `CLASP-151` | §9 | Differential CTE does not compromise seal integrity or latch preload | X | X | | | Mated dissimilar-material cryo/hot thermal test + thermoelastic FEA |
+| `CLASP-151` | §9 | Differential CTE does not compromise seal integrity or latch preload | X | X | | | Mated dissimilar-material cryo/hot thermal test + coupled `90 K / +120 °C` thermoelastic FEA (`fea/clasp_thermoelastic_fea.py`, `Ti-6Al-4V` tangential flexure spokes `MoS_y >= +3.28`) |
 | `CLASP-160` | §10.2 | Full 6-part qualification campaign completed | X | | | X | Witnessed test reports covering §10.2 items 1–6 |
 | `CLASP-161` | §10.2 | Testing performed at CLASP-accredited conformance facility | | | X | | Facility accreditation certificate verification |
 | `CLASP-162` | §10.2 | Certified ports marked and entered in public registry | | | X | | Marking inspection and registry record audit |
