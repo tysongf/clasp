@@ -6,4 +6,5 @@ ledger/build/
 *.db
 *.sqlite
 *.sqlite3
+outreach_emails/
 

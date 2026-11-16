@@ -1,0 +1,69 @@
+# CLASP — Common Lunar Attachment and Servicing Port
+
+An open, royalty-free passive mechanical, cryogenic fluid, and contactless power/data interface standard (`CLASP-STD-001`) for lunar surface cargo, propellant depots, rovers, and cislunar servicing below crewed IDSS scale.
+
+![CLASP Polar-Shadow 6-DOF Pose & DataMatrix Capture Demo](perception/demo_keyframe.png)
+
+> **Design Philosophy:** Like the ISO 1161 shipping-container corner casting, all actuation, sensing, illumination, and intelligence reside on the active manipulator (`CLASP-A`). The passive payload port (`CLASP-M`) is dumb metal—zero electrical contacts, zero actuators, and manufacturable for well under `CAD 2,000`.
+
+---
+
+## Interface Tiers (`CLASP-STD-001` Rev A)
+
+All three tiers share a single **`240 mm OD × ≤ 55 mm H`** external footprint, **`8 × M8`** clocked mounting pattern (`210 mm BCD`), external perimeter capture/latch collar, **`3 × 15°`** alignment ramps, **`5`** asymmetric retroreflective fiducials (`[CLASP-140]`), and static laser-etched DataMatrix ID (`[CLASP-141]`):
+
+| Tier | Capability | Mass (`Al 7075-T6`) | Mass Limit | Dust Mitigation |
+|---|---|---:|---:|---|
+| **`CLASP-M`** | Mechanical capture & structural tie-down (`10 kN` axial, `5 kN` shear, `2.0 kN·m` bend, `1.0 kN·m` torsion) | `2.132 kg` / `2.050 kg` (DFM) | `≤ 3.50 kg` | Passive cover, wiping chamfers, orientation |
+| **`CLASP-F`** | `CLASP-M` + `25 mm` coaxial dual-poppet LOX coupling (`2.0 kg/s`, `≤ 5 cm³` trapped volume, `2.0 mm` chilldown bypass) | `3.156 kg` | `≤ 6.00 kg` | + Inductively powered `1 kV` EDS & dry purge |
+| **`CLASP-FP`** | `CLASP-F` + `500 W` inductive power (`≥ 85%` eff) + `10 Mbit/s` optical data + non-contact magnetic/mechanical inhibits | `3.689 kg` | `≤ 7.50 kg` | + Inductively powered `1 kV` EDS & dry purge |
+
+---
+
+## Key Repository Deliverables
+
+- **Specification & Verification:**
+  - [CLASP-STD-001_RevA_Working_Draft.md](CLASP-STD-001_RevA_Working_Draft.md) ([PDF](CLASP-STD-001_RevA_Working_Draft.pdf)) — `62` numbered requirements across `40` sections/subsections.
+  - [Annex_A_Verification_Matrix_Draft.md](Annex_A_Verification_Matrix_Draft.md) — Complete Verification Cross-Reference Matrix (`T / A / I / D`).
+  - [tools/clasp_check.py](tools/clasp_check.py) — Zero-dependency spec linter, Annex A parity checker, and first-principles sizing script.
+- **Parametric CAD (`build123d`):**
+  - [cad/clasp_m.py](cad/clasp_m.py) → [cad/CLASP-M.step](cad/CLASP-M.step) (`2.132 kg`, `758.60 cm³`).
+  - [cad/clasp_m_dfm.py](cad/clasp_m_dfm.py) → [cad/CLASP-M-DFM.step](cad/CLASP-M-DFM.step) (`2.050 kg`, `729.39 cm³` — 2-setup CNC lathe + top-down 3-axis mill; quoted `$380.02 USD` Qty 1 economy prototype in `6061-T6` vs. `$473.97 USD` baseline).
+  - [cad/clasp_fp_packaging.py](cad/clasp_fp_packaging.py) → [cad/CLASP-FP-Packaging.step](cad/CLASP-FP-Packaging.step) (`28/28` zero-overlap 3D B-Rep checks inside the `Ø 148 mm` central bore).
+- **Structural FEA (`gmsh` + `scikit-fem`):**
+  - [fea/clasp_m_fea.py](fea/clasp_m_fea.py) — Quadratic `Tet10` 3D linear-elastic FEA (`~92k` DOFs) under `[CLASP-030]`/`[CLASP-031]` combined worst-case loads:
+    - `CLASP-M`: `82.3 MPa` limit / `115.3 MPa` ultimate (`+3.21` yield / `+3.37` ult body MoS with `0.80×` `+120 °C` hot-soak knockdown).
+    - `CLASP-M-DFM`: `119.5 MPa` limit / `167.4 MPa` ultimate (`+1.48` yield / `+1.57` ult MoS at `+120 °C`).
+- **Polar-Shadow 6-DOF Perception & DataMatrix Demo (`OpenCV` + `zxing-cpp`):**
+  - [perception/run_benchmark_and_demo.py](perception/run_benchmark_and_demo.py) → [clasp_polar_capture_demo.mp4](perception/clasp_polar_capture_demo.mp4), [benchmark_results.json](perception/benchmark_results.json).
+  - `100`-trial `§5.1` envelope stress test (`±100 mm X/Y`, `250–350 mm Z`, `±15°` pitch/yaw, `±20°` roll, `0.5°–5°` sun elevation, solar glints, and `21` occluded-fiducial trials): **`99.0%`** pose success (`95.24%` occluded), **`95.0%`** DataMatrix decode, **`0.005 mm`** / **`0.004°`** median error.
+- **C++20 SQLite / JSON Fleet Ledger (`ledger/`):**
+  - [ledger/include/clasp/ledger.hpp](ledger/include/clasp/ledger.hpp), [ledger/src/ledger.cpp](ledger/src/ledger.cpp), [ledger/sql/schema.sql](ledger/sql/schema.sql), [ledger/schema/clasp_port_ledger.schema.json](ledger/schema/clasp_port_ledger.schema.json).
+  - Keyed by `[CLASP-141]` `unique_serial`, tracking `payload_contents`, `fill_state`, `cycle_count`, and rated life (`500` / `1,000` cycles).
+
+---
+
+## Quick Verification
+
+```bash
+# 1. Spec lint, Annex A parity, and sizing checks
+python3 tools/clasp_check.py
+
+# 2. Build and test C++20 fleet ledger (requires libsqlite3-dev)
+cmake -S ledger -B ledger/build && cmake --build ledger/build -j
+ctest --test-dir ledger/build --output-on-failure
+
+# 3. Run CAD / FEA / Perception pipelines (inside .venv)
+python cad/clasp_m_dfm.py
+python cad/clasp_fp_packaging.py
+python fea/clasp_m_fea.py --step cad/CLASP-M-DFM.step --order 2 --lc-min 2.5 --lc-max 7.5
+python -m perception.run_benchmark_and_demo
+```
+
+---
+
+## License & Contact
+
+The passive port interface specification (`CLASP-STD-001`) and `CLASP-M` geometry are intended for open, royalty-free adoption.  
+**Author:** Tyson Fritz (`tysongfritz@gmail.com`) — Nanaimo, BC, Canada.
+
