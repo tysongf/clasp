@@ -69,7 +69,7 @@ class ClaspMSpec:
     cam_base_z_mm: float = 44.0
 
     # [CLASP-140] - [CLASP-141] Asymmetric fiducial bosses & DataMatrix pad
-    fiducial_angles_deg: tuple[float, ...] = (18.0, 108.0, 196.0, 285.0)
+    fiducial_angles_deg: tuple[float, ...] = (18.0, 68.0, 112.0, 196.0, 300.0)
     fiducial_radius_mm: float = 105.0
     fiducial_boss_diameter_mm: float = 10.0
     fiducial_boss_height_mm: float = 1.5
@@ -236,7 +236,7 @@ def build_clasp_m(spec: ClaspMSpec = ClaspMSpec()):
             z_dir=(0.0, 0.0, 1.0),
         )
         with BuildSketch(dm_plane):
-            Rectangle(14.0, 14.0)
+            Rectangle(18.0, 18.0)
         extrude(amount=1.0)
 
     return part.part

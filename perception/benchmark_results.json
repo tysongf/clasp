@@ -1,0 +1,13 @@
+{
+  "trials": 100,
+  "pose_success_rate_pct": 99.0,
+  "occluded_trials": 21,
+  "occluded_success_rate_pct": 95.24,
+  "datamatrix_decode_rate_pct": 95.0,
+  "pos_err_median_mm": 0.005,
+  "pos_err_p95_mm": 0.044,
+  "rot_err_median_deg": 0.004,
+  "rot_err_p95_deg": 0.076,
+  "latency_median_ms": 25.8,
+  "latency_p95_ms": 53.1
+}
